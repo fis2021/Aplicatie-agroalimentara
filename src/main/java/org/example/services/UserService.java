@@ -5,7 +5,10 @@ import org.dizitart.no2.objects.ObjectRepository;
 import org.example.exceptions.UsernameAlreadyExistsException;
 import org.example.model.User;
 
+import javax.swing.*;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
@@ -57,5 +60,8 @@ public class UserService {
         return md;
     }
 
+    public static void checkUsers(String username,String password,String role) throws IOException {
+
+    }
 
 }
