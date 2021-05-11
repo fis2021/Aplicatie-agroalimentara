@@ -25,7 +25,7 @@ public class LoginController {
 
     public void openRegister() throws Exception {
 
-        Parent registerWindow = FXMLLoader.load(getClass().getResource("/register.fxml"));
+        Parent registerWindow = FXMLLoader.load(getClass().getResource("register.fxml"));
         Scene registerScene = new Scene(registerWindow);
 
         Stage window = new Stage();
