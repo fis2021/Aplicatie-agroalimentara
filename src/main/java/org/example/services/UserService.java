@@ -1,7 +1,6 @@
 package org.example.services;
 
 import org.example.admin.AdminController;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.customer.CustomerController;
@@ -34,20 +33,20 @@ public class UserService {
     private static List<Order> orders;
     private static List<User> users;
     private static List<OrderStatus>stats;
-    private static final Path USERS_PATH = FileSystemService.getPathToFile("config", "users.json");
-    private static final Path ORDERS_PATH=FileSystemService.getPathToFile("config","orders.json");
-    private static final Path STATUS_PATH=FileSystemService.getPathToFile("config","status.json");
+    private static final Path USERS_PATH = FileSystemService.getPathToFile("config", "users.db");
+    private static final Path ORDERS_PATH=FileSystemService.getPathToFile("config","orders.db");
+    private static final Path STATUS_PATH=FileSystemService.getPathToFile("config","status.db");
 
     public static void loadUsersFromFile() throws IOException,UsernameAlreadyExistsException {
 
         if (!Files.exists(USERS_PATH)) {
-            FileUtils.copyURLToFile(UserService.class.getClassLoader().getResource("users.json"), USERS_PATH.toFile());
+            FileUtils.copyURLToFile(UserService.class.getClassLoader().getResource("users.db"), USERS_PATH.toFile());
         }
         if (!Files.exists(ORDERS_PATH)) {
-            FileUtils.copyURLToFile(UserService.class.getClassLoader().getResource("orders.json"),ORDERS_PATH.toFile());
+            FileUtils.copyURLToFile(UserService.class.getClassLoader().getResource("orders.db"),ORDERS_PATH.toFile());
         }
         if(!Files.exists(STATUS_PATH)){
-            FileUtils.copyURLToFile(UserService.class.getClassLoader().getResource("orders.json"),STATUS_PATH.toFile());
+            FileUtils.copyURLToFile(UserService.class.getClassLoader().getResource("orders.db"),STATUS_PATH.toFile());
         }
 
 
@@ -106,7 +105,7 @@ public class UserService {
         users.add(new User(username, encodePassword(username, password), role));
         persistUsers();
         if(Objects.equals(role,"Store")) {
-            Path STORE_PATH = FileSystemService.getPathToFile("config", username + ".json");
+            Path STORE_PATH = FileSystemService.getPathToFile("config", username + ".db");
             try {
                 File myObj = new File(String.valueOf(STORE_PATH));
                 if (myObj.createNewFile()) {
@@ -153,7 +152,7 @@ public class UserService {
 
         // This is the way a password should be encoded when checking the credentials
         return new String(hashedPassword, StandardCharsets.UTF_8)
-                .replace("\"", ""); //to be able to save in JSON format
+                .replace("\"", "");
     }
 
     public static MessageDigest getMessageDigest() {
@@ -185,7 +184,7 @@ public class UserService {
                                     AdminController.openAdminPanel();
                                 }
                             } else if (Objects.equals(role, "Store")) {
-                                Path STORE_PATH = FileSystemService.getPathToFile("config", username + ".json");
+                                Path STORE_PATH = FileSystemService.getPathToFile("config", username + ".db");
                                 StoreController.openStorePanel(STORE_PATH);
                             } else {
                                 JOptionPane.showMessageDialog(null, "Wrong credentials");
