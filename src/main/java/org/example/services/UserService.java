@@ -1,5 +1,7 @@
 package org.example.services;
 
+import org.dizitart.no2.Nitrite;
+import org.dizitart.no2.objects.ObjectRepository;
 import org.example.admin.AdminController;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -12,7 +14,6 @@ import org.example.model.Order;
 import org.example.model.OrderStatus;
 import org.example.model.ProductToOrder;
 import org.example.model.User;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -31,85 +32,54 @@ import javax.swing.*;
 
 public class UserService {
 
-    private static List<Order> orders;
-    private static List<User> users;
-    private static List<OrderStatus>stats;
-    private static final Path USERS_PATH = FileSystemService.getPathToFile("config", "users.json");
-    private static final Path ORDERS_PATH=FileSystemService.getPathToFile("config","orders.json");
-    private static final Path STATUS_PATH=FileSystemService.getPathToFile("config","status.json");
+    private static ObjectRepository<Order> orders;
+    private static ObjectRepository<User> users;
+    private static ObjectRepository<OrderStatus>stats;
+    private static final Path USERS_PATH = FileSystemService.getPathToFile("config", "users.db");
+    private static final Path ORDERS_PATH=FileSystemService.getPathToFile("config","orders.db");
+    private static final Path STATUS_PATH=FileSystemService.getPathToFile("config","status.db");
 
-    public static void loadUsersFromFile() throws IOException,UsernameAlreadyExistsException {
-
-        if (!Files.exists(USERS_PATH)) {
-            FileUtils.copyURLToFile(UserService.class.getClassLoader().getResource("users.json"), USERS_PATH.toFile());
-        }
-        if (!Files.exists(ORDERS_PATH)) {
-            FileUtils.copyURLToFile(UserService.class.getClassLoader().getResource("orders.json"),ORDERS_PATH.toFile());
-        }
-        if(!Files.exists(STATUS_PATH)){
-            FileUtils.copyURLToFile(UserService.class.getClassLoader().getResource("orders.json"),STATUS_PATH.toFile());
-        }
-
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
-
-        ObjectMapper objMap=new ObjectMapper();
-        objMap.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
-
-        ObjectMapper obMap=new ObjectMapper();
-        obMap.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
-
-        orders=objMap.readValue(ORDERS_PATH.toFile(),new TypeReference<List<Order>>(){
-        });
-
-        users = objectMapper.readValue(USERS_PATH.toFile(), new TypeReference<List<User>>() {
-        });
-
-        stats=objectMapper.readValue(STATUS_PATH.toFile(),new TypeReference<List<OrderStatus>>(){
-        });
-
+    public static void initUserDatabase() throws UsernameAlreadyExistsException {
+        Nitrite database = Nitrite.builder()
+                .filePath(USERS_PATH.toFile())
+                .openOrCreate("test", "test");
+        users = database.getRepository(User.class);
         if(users.size()==0)
         {
             UserService.addUser("Admin","Admin1234","Admin");
         }
     }
 
-    public static List<User> getUsers(){
-        return users;
+    public static void initOrderDatabase() {
+        Nitrite database = Nitrite.builder()
+                .filePath(ORDERS_PATH.toFile())
+                .openOrCreate("test", "test");
+        orders = database.getRepository(Order.class);
     }
-    public static List<Order> getOrders() { return orders;}
-    public static List<OrderStatus> getStats(){return stats;}
 
-
+    public static void initStatusDatabase() {
+        Nitrite database = Nitrite.builder()
+                .filePath(STATUS_PATH.toFile())
+                .openOrCreate("test", "test");
+        stats = database.getRepository(OrderStatus.class);
+    }
 
     public static void addOrder(String shopname, String customername, ArrayList<ProductToOrder> productsOrd) {
-        orders.add(new Order(shopname, customername, productsOrd));
-        stats.add(new OrderStatus(new Order(shopname, customername, productsOrd),"Pending"));
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(STATUS_PATH.toFile(),stats);
-        } catch (IOException e) {
-            throw new CouldNotWriteOrderException();
-        }
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(ORDERS_PATH.toFile(), orders);
-        } catch (IOException e) {
-            throw new CouldNotWriteOrderException();
-        }
-
+        orders.insert(new Order(shopname, customername, productsOrd));
+        stats.insert(new OrderStatus(new Order(shopname, customername, productsOrd),"Pending"));
     }
 
     public static void addUser(String username, String password, String role) throws UsernameAlreadyExistsException {
         checkUserDoesNotAlreadyExist(username);
-        users.add(new User(username, encodePassword(username, password), role));
-        persistUsers();
+        users.insert(new User(username, encodePassword(username, password), role));
         if(Objects.equals(role,"Store")) {
-            Path STORE_PATH = FileSystemService.getPathToFile("config", username + ".json");
+            Path STORE_PATH = FileSystemService.getPathToFile("config", username + ".db");
             try {
                 File myObj = new File(String.valueOf(STORE_PATH));
                 if (myObj.createNewFile()) {
+                    Nitrite database = Nitrite.builder()
+                            .filePath(STORE_PATH.toFile())
+                            .openOrCreate("test", "test");
                     System.out.println("File created: " + myObj.getName());
                 } else {
                     System.out.println("File already exists.");
@@ -118,30 +88,13 @@ public class UserService {
                 System.out.println("An error occurred.");
                 e.printStackTrace();
             }
-            try {
-                FileWriter fwrite = new FileWriter(String.valueOf(STORE_PATH));
-                fwrite.write("[]");
-                fwrite.close();
-            } catch (IOException e) {
-                System.out.println("An error occurred.");
-                e.printStackTrace();
-            }
         }
     }
 
     private static void checkUserDoesNotAlreadyExist(String username) throws UsernameAlreadyExistsException {
-        for (User user : users) {
+        for (User user : users.find()) {
             if (Objects.equals(username, user.getUsername()))
                 throw new UsernameAlreadyExistsException(username);
-        }
-    }
-
-    private static void persistUsers() {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(USERS_PATH.toFile(), users);
-        } catch (IOException e) {
-            throw new CouldNotWriteUsersException();
         }
     }
 
@@ -165,28 +118,39 @@ public class UserService {
         }
         return md;
     }
+
     public static void checkUsers(String username,String password,String role) throws IOException {
         int i = 0;
-        for (User user : users) {
+        for (User user : users.find()) {
             if (!Objects.equals(username, user.getUsername()))
                 i++;
         }
         if (i == users.size()) {
             JOptionPane.showMessageDialog(null, "Wrong credentials");
         } else {
-            for (User user : users) {
+            for (User user : users.find()) {
                 if (Objects.equals(username, user.getUsername())) {
                     if (Objects.equals(user.getPassword(), encodePassword(username, password))) {
                         if (Objects.equals(role, user.getRole())) {
                             if (Objects.equals(role, "Customer")) {
-                                CustomerController.openCustomerPanel();
+
+
+                                System.out.println("merge merge");
+
+
+                                //CustomerController.openCustomerPanel();
                             } else if (Objects.equals(role, "Admin")) {
                                 {
                                     AdminController.openAdminPanel();
                                 }
                             } else if (Objects.equals(role, "Store")) {
-                                Path STORE_PATH = FileSystemService.getPathToFile("config", username + ".json");
-                                StoreController.openStorePanel(STORE_PATH);
+                                Path STORE_PATH = FileSystemService.getPathToFile("config", username + ".db");
+
+
+                                System.out.println("merge blana");
+
+
+                                //StoreController.openStorePanel(STORE_PATH);
                             } else {
                                 JOptionPane.showMessageDialog(null, "Wrong credentials");
                             }
