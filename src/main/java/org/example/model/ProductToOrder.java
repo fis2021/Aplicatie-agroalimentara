@@ -8,9 +8,7 @@ public class ProductToOrder {
     private int quantity;
     private String size;
 
-    public ProductToOrder()
-    {
-
+    public ProductToOrder() {
     }
 
     public ProductToOrder(Product prod,int quantity,String size)
@@ -49,7 +47,7 @@ public class ProductToOrder {
         return "ProductToOrder{" +
                 "prod=" + prod +
                 ", quantity=" + quantity +
-                ", size='" + size + ''' +
+                ", size='" + size + '\'' +
         '}';
     }
 
