@@ -3,7 +3,6 @@ package org.example.services;
 import org.dizitart.no2.Nitrite;
 import org.dizitart.no2.objects.ObjectRepository;
 import org.example.admin.AdminController;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.customer.CustomerController;
@@ -70,7 +69,7 @@ public class UserService {
     }
 
     public static void addUser(String username, String password, String role) throws UsernameAlreadyExistsException {
-        checkUserDoesNotAlreadyExist(username);
+        //checkUserDoesNotAlreadyExist(username);
         users.insert(new User(username, encodePassword(username, password), role));
         if(Objects.equals(role,"Store")) {
             Path STORE_PATH = FileSystemService.getPathToFile("config", username + ".db");
@@ -106,7 +105,7 @@ public class UserService {
 
         // This is the way a password should be encoded when checking the credentials
         return new String(hashedPassword, StandardCharsets.UTF_8)
-                .replace("\"", ""); //to be able to save in JSON format
+                .replace("\"", "");
     }
 
     public static MessageDigest getMessageDigest() {
@@ -119,7 +118,15 @@ public class UserService {
         return md;
     }
 
-    public static void checkUsers(String username,String password,String role) throws IOException {
+    public static ObjectRepository<User> getUsers() {
+        return users;
+    }
+
+    public static ObjectRepository<Order> getOrders() {
+        return orders;
+    }
+
+    public static void checkUsers(String username, String password, String role) throws IOException {
         int i = 0;
         for (User user : users.find()) {
             if (!Objects.equals(username, user.getUsername()))

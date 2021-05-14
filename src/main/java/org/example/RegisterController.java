@@ -21,6 +21,7 @@ public class RegisterController {
     @FXML
     public void handleRegisterAction() {
         try {
+            System.out.println(this.usernameInput.getText());
             UserService.addUser(this.usernameInput.getText(), this.passwordInput.getText(), "Customer");
             this.registerMessage.setText("Account created successfully!");
         } catch (UsernameAlreadyExistsException var2) {
