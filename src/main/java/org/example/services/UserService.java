@@ -76,9 +76,10 @@ public class UserService {
             try {
                 File myObj = new File(String.valueOf(STORE_PATH));
                 if (myObj.createNewFile()) {
-                    Nitrite database = Nitrite.builder()
-                            .filePath(STORE_PATH.toFile())
-                            .openOrCreate("test", "test");
+                    // TODO: check if below code is necessarily
+//                    Nitrite database = Nitrite.builder()
+//                            .filePath(STORE_PATH.toFile())
+//                            .openOrCreate("test", "test");
                     System.out.println("File created: " + myObj.getName());
                 } else {
                     System.out.println("File already exists.");
@@ -145,7 +146,7 @@ public class UserService {
                                 System.out.println("merge merge");
 
 
-                                //CustomerController.openCustomerPanel();
+                                CustomerController.openCustomerPanel();
                             } else if (Objects.equals(role, "Admin")) {
                                 {
                                     AdminController.openAdminPanel();
@@ -157,7 +158,7 @@ public class UserService {
                                 System.out.println("merge blana");
 
 
-                                //StoreController.openStorePanel(STORE_PATH);
+                                StoreController.openStorePanel(STORE_PATH);
                             } else {
                                 JOptionPane.showMessageDialog(null, "Wrong credentials");
                             }
