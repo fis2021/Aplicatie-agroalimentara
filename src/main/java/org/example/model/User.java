@@ -4,9 +4,9 @@ import org.dizitart.no2.objects.Id;
 
 public class User {
     @Id
-    private String username;
-    private String password;
-    private String role;
+    public String username;
+    public String password;
+    public String role;
 
     public User(String username, String password, String role) {
         this.username = username;

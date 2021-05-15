@@ -18,6 +18,7 @@ import org.example.services.FileSystemService;
 import org.example.services.UserService;
 import org.example.store.EditProductController;
 
+import java.net.URL;
 import java.util.List;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -39,7 +40,9 @@ public class CustomerController {
     private TextField filterField;
 
     public static void openCustomerPanel() throws IOException {
-        Parent customerWindow = FXMLLoader.load(CustomerController.class.getResource("/customer.fxml"));
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(new URL("file:///C:/Users/Andreea/IdeaProjects/Aplicatie-agroalimentara-final11/src/main/resources/org/example/customer.fxml"));
+        Parent customerWindow = loader.load();
         Scene customerScene = new Scene(customerWindow);
 
         Stage window = new Stage();

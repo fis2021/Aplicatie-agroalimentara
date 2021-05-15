@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import org.example.services.UserService;
 
 import java.io.IOException;
+import java.net.URL;
 
 public class AdminController {
 
@@ -23,7 +24,9 @@ public class AdminController {
     private Text registerMessage;
 
     public static void openAdminPanel() throws IOException {
-        Parent adminWindow = FXMLLoader.load(AdminController.class.getResource("/admin.fxml"));
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(new URL("file:///C:/Users/Andreea/IdeaProjects/Aplicatie-agroalimentara-final11/src/main/resources/org/example/admin.fxml"));
+        Parent adminWindow = loader.load();
         Scene adminScene = new Scene(adminWindow);
 
         Stage window = new Stage();

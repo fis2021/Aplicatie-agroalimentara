@@ -12,6 +12,7 @@ import org.example.services.StoreService;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.net.URL;
 
 public class AddProductController {
     @FXML
@@ -24,7 +25,9 @@ public class AddProductController {
     private PasswordField passwordInput;
 
     public static void openAddProdPanel() throws IOException {
-        Parent addProdWindow = FXMLLoader.load(AddProductController.class.getResource("/addProduct.fxml"));
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(new URL("file:///C:/Users/Andreea/IdeaProjects/Aplicatie-agroalimentara-final11/src/main/resources/org/example/addProduct.fxml"));
+        Parent addProdWindow = loader.load();
         Scene addProdScene = new Scene(addProdWindow);
 
         Stage window = new Stage();
