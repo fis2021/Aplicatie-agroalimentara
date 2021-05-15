@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import org.dizitart.no2.objects.ObjectRepository;
 import org.example.model.OrderStatus;
 import org.example.services.FileSystemService;
 import org.example.services.StoreService;
@@ -30,12 +31,12 @@ public class StoreOrdersController {
     @FXML
     private TextField  filterField;
     private final ObservableList<OrderStatus> statList= FXCollections.observableArrayList();
-    private static List<OrderStatus> stats;
+    private static ObjectRepository<OrderStatus> stats;
     private static String accepReject;
 
     public void initialize(){
         order.setCellValueFactory(new PropertyValueFactory<OrderStatus,String>("Order"));
-        for(OrderStatus or:stats){
+        for(OrderStatus or:stats.find()){
             if(Objects.equals(or.getStatus(),"Pending")) {
                 statList.add(or);
             }

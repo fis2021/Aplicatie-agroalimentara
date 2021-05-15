@@ -17,26 +17,26 @@ import java.util.List;
 import java.util.Objects;
 
 public class StoreService {
-    // private static List<Product> products;
+    private static ObjectRepository<Product> products;
     private static ObjectRepository<User> users=UserService.getUsers();
     private static final Path USER_PATH = FileSystemService.getPathToFile("config", "users.db");
     public static void loadUsers() throws IOException,UsernameAlreadyExistsException {
         users=UserService.getUsers();
     }
-    public static List<OrderStatus> loadStatusFromFile(Path DATA_PATH) throws IOException {
-        List<OrderStatus> stats;
+    public static ObjectRepository<OrderStatus> loadStatusFromFile(Path DATA_PATH) throws IOException {
+        ObjectRepository<OrderStatus> stats;
         ObjectMapper objMap = new ObjectMapper();
         objMap.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
-        stats = objMap.readValue(DATA_PATH.toFile(), new TypeReference<List<OrderStatus>>() {
+        stats = objMap.readValue(DATA_PATH.toFile(), new TypeReference<ObjectRepository<OrderStatus>>() {
         });
         return stats;
     }
 
-    public static List<Product> loadDataFromFile(Path DATA_PATH) throws IOException {
-        List<Product> products;
+    public static ObjectRepository<Product> loadDataFromFile(Path DATA_PATH) throws IOException {
+        ObjectRepository<Product> products;
         ObjectMapper objMap = new ObjectMapper();
         objMap.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
-        products = objMap.readValue(DATA_PATH.toFile(), new TypeReference<List<Product>>() {
+        products = objMap.readValue(DATA_PATH.toFile(), new TypeReference<ObjectRepository<Product>>() {
         });
         return products;
     }
@@ -53,11 +53,11 @@ public class StoreService {
             for (User user : users.find()) {
                 if (Objects.equals(username, user.getUsername())) {
                     if (Objects.equals(user.getPassword(), UserService.encodePassword(username, password))) {
-                        List<Product> products;
+                        ObjectRepository<Product> products;
                         pth = FileSystemService.getPathToFile("config", username + ".db");
                         products = loadDataFromFile(pth);
                         checkProductDoesNotAlreadyExist(name, pth);
-                        products.add(new Product(name, Double.parseDouble(price)));
+                        products.insert(new Product(name, Double.parseDouble(price)));
                         try {
                             ObjectMapper objectMapper = new ObjectMapper();
                             objectMapper.writerWithDefaultPrettyPrinter().writeValue(pth.toFile(), products);
@@ -84,11 +84,11 @@ public class StoreService {
             for(User user:users.find()){
                 if (Objects.equals(username, user.getUsername())){
                     if (Objects.equals(user.getPassword(), UserService.encodePassword(username, password))) {
-                        List<Product> products;
+                        ObjectRepository<Product> products;
                         pth = FileSystemService.getPathToFile("config", username + ".db");
                         products = loadDataFromFile(pth);
                         checkProductDoesNotExist(prodname,pth);
-                        for (Iterator<Product> iter = products.listIterator(); iter.hasNext(); ) {
+                        for (Iterator<Product> iter = (Iterator<Product>) products.find(); iter.hasNext(); ) {
                             Product a = iter.next();
                             if (Objects.equals(a.getName(),prodname)) {
                                 iter.remove();
@@ -102,7 +102,7 @@ public class StoreService {
                             System.out.println("An error occurred.");
                             e.printStackTrace();
                         }
-                        for(Product prod:products) {
+                        for(Product prod:products.find()) {
                             String tmp=String.valueOf(prod.getPrice());
                             addData(prod.getName(), tmp, username, password);
                         }
@@ -139,18 +139,18 @@ public class StoreService {
         }
     }
     private static void checkProductDoesNotAlreadyExist(String name,Path pth) throws ProductAlreadyExistsException,IOException {
-        List<Product> products;
+        ObjectRepository<Product> products;
         products=loadDataFromFile(pth);
-        for (Product prod:products) {
+        for (Product prod:products.find()) {
             if (Objects.equals(name, prod.getName()))
                 throw new ProductAlreadyExistsException(name);
         }
     }
     private static void checkProductDoesNotExist(String name, Path pth) throws ProductDoesNotExist,IOException{
-        List<Product> products;
+        ObjectRepository<Product> products;
         products=loadDataFromFile(pth);
         int i=0;
-        for(Product prod:products){
+        for(Product prod:products.find()){
             if(!Objects.equals(name, prod.getName()))
                 i=i+1;
         }
@@ -161,9 +161,9 @@ public class StoreService {
     public static void addOrdStatus(OrderStatus o) throws IOException {
         Path pth;
         pth = FileSystemService.getPathToFile("config",  "status.db");
-        List<OrderStatus> stats;
+        ObjectRepository<OrderStatus> stats;
         stats = loadStatusFromFile(pth);
-        stats.add(o);
+        stats.insert(o);
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(pth.toFile(),stats);
@@ -171,12 +171,12 @@ public class StoreService {
             throw new CouldNotWriteOrderException();
         }
     }
-    public static void deleteStatus(String shopname, String customername, ArrayList<ProductToOrder> productsOrd ) throws IOException {
+    public static void deleteStatus(String shopname, String customername, ObjectRepository<ProductToOrder> productsOrd ) throws IOException {
         Path pth;
-        List<OrderStatus> stats;
+        ObjectRepository<OrderStatus> stats;
         pth = FileSystemService.getPathToFile("config", "status.db");
         stats = loadStatusFromFile(pth);
-        for (Iterator<OrderStatus> iter = stats.listIterator(); iter.hasNext(); ) {
+        for (Iterator<OrderStatus> iter = (Iterator<OrderStatus>) stats.find(); iter.hasNext(); ) {
             OrderStatus a = iter.next();
             if (Objects.equals(shopname,a.getO().getShopname())) {
                 if(Objects.equals(a.getO().getCustomername(),customername)){
@@ -194,7 +194,7 @@ public class StoreService {
             JOptionPane.showMessageDialog(null,"An error occurre");
             e.printStackTrace();
         }
-        for(OrderStatus os:stats) {
+        for(OrderStatus os:stats.find()) {
             StoreService.addOrdStatus(os);
         }
 

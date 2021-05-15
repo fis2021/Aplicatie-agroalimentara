@@ -57,7 +57,7 @@ public class ViewProductController {
     private TextField productsincart;
 
     private final ObservableList<Product> prodList= FXCollections.observableArrayList();
-    private static List<Product> products;
+    private static ObjectRepository<Product> products;
 
     ArrayList<ProductToOrder> productsOrd = new ArrayList<ProductToOrder>();
     ArrayList<Product> productstoorder = new ArrayList<Product>();
@@ -85,7 +85,7 @@ public class ViewProductController {
         name.setCellValueFactory(new PropertyValueFactory<>("Name"));
         price.setCellValueFactory(new PropertyValueFactory<>("Price"));
 
-        for(Product prod:products){
+        for(Product prod:products.find()){
             prodList.add(prod);
         }
 
@@ -282,7 +282,7 @@ public class ViewProductController {
                     if (Objects.equals(user.getPassword(), UserService.encodePassword(usernameInput.getText(), passwordInput.getText())))
                     {
                         try {
-                            UserService.addOrder(shopnameInput.getText(), usernameInput.getText(), productsOrd);
+                            UserService.addOrder(shopnameInput.getText(), usernameInput.getText(), (ObjectRepository<ProductToOrder>) productsOrd);
                             productsOrd.clear();
                             productscounter=0;
                             productsincart.setText(String.valueOf(productscounter));

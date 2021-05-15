@@ -1,20 +1,21 @@
 package org.example.model;
 
-import java.util.ArrayList;
+import org.dizitart.no2.objects.ObjectRepository;
+
 import java.util.Objects;
 
 public class Order {
 
     private String shopname;
     private String customername;
-    private ArrayList<ProductToOrder> productsOrd ;
+    private ObjectRepository<ProductToOrder> productsOrd ;
 
     public  Order()
     {
 
     }
 
-    public Order(String shopname,String customername,ArrayList<ProductToOrder> productsOrd)
+    public Order(String shopname,String customername,ObjectRepository<ProductToOrder> productsOrd)
     {
         this.shopname=shopname;
         this.customername=customername;
@@ -37,11 +38,11 @@ public class Order {
         this.customername = customername;
     }
 
-    public ArrayList<ProductToOrder> getProductsOrd() {
+    public ObjectRepository<ProductToOrder> getProductsOrd() {
         return productsOrd;
     }
 
-    public void setProductsOrd(ArrayList<ProductToOrder> productsOrd) {
+    public void setProductsOrd(ObjectRepository<ProductToOrder> productsOrd) {
         this.productsOrd = productsOrd;
     }
 

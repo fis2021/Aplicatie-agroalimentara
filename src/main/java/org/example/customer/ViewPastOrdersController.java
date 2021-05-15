@@ -12,6 +12,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import org.dizitart.no2.objects.ObjectRepository;
 import org.example.model.OrderStatus;
 import org.example.services.FileSystemService;
 import org.example.services.StoreService;
@@ -27,7 +28,7 @@ public class ViewPastOrdersController {
     @FXML
     private TextField filterField;
     private final ObservableList<OrderStatus> statList= FXCollections.observableArrayList();
-    private static List<OrderStatus> stats;
+    private static ObjectRepository<OrderStatus> stats;
     public static void viewPastOrdersPanel() throws IOException {
 
         stats = StoreService.loadStatusFromFile(FileSystemService.getPathToFile("config", "status.db"));
@@ -42,7 +43,7 @@ public class ViewPastOrdersController {
     public void initialize()
     {
         orders.setCellValueFactory(new PropertyValueFactory<OrderStatus,String>("Orders"));
-        for(OrderStatus or:stats){
+        for(OrderStatus or:stats.find()){
             statList.add(or);
         }
 
