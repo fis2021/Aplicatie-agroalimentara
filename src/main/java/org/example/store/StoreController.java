@@ -1,4 +1,5 @@
 package org.example.store;
+import org.dizitart.no2.objects.ObjectRepository;
 import org.example.admin.AdminController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,7 +22,7 @@ import java.nio.file.Path;
 import java.util.List;
 public class StoreController {
     private final ObservableList<Product> prodList= FXCollections.observableArrayList();
-    private static List<Product> products;
+    private static ObjectRepository<Product> products;
     @FXML
     private TableView<Product> tableview;
     @FXML
@@ -46,7 +47,7 @@ public class StoreController {
     public void initialize(){
         name.setCellValueFactory(new PropertyValueFactory<>("Name"));
         price.setCellValueFactory(new PropertyValueFactory<>("Price"));
-        for(Product prod:products){
+        for(Product prod:products.find()){
             prodList.add(prod);
         }
         FilteredList<Product> filteredData = new FilteredList<>(prodList, b -> true);

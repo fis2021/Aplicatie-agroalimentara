@@ -5,6 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.example.exceptions.UsernameAlreadyExistsException;
+import org.example.services.UserService;
 
 import java.io.IOException;
 
@@ -16,7 +18,8 @@ public class App extends Application {
     private static Scene scene;
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) throws IOException, UsernameAlreadyExistsException {
+        UserService.initUserDatabase();
         scene = new Scene(loadFXML("login"));
         stage.setScene(scene);
         stage.show();

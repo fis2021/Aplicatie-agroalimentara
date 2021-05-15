@@ -63,7 +63,7 @@ public class UserService {
         stats = database.getRepository(OrderStatus.class);
     }
 
-    public static void addOrder(String shopname, String customername, ArrayList<ProductToOrder> productsOrd) {
+    public static void addOrder(String shopname, String customername, ObjectRepository<ProductToOrder> productsOrd) {
         orders.insert(new Order(shopname, customername, productsOrd));
         stats.insert(new OrderStatus(new Order(shopname, customername, productsOrd),"Pending"));
     }
