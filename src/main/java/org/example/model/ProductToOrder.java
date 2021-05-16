@@ -7,17 +7,15 @@ public class ProductToOrder {
     // TODO: Remove public modifier.
     public Product prod;
     public int quantity;
-    public String size;
 
     public ProductToOrder() {
 
     }
 
-    public ProductToOrder(Product prod,int quantity,String size)
+    public ProductToOrder(Product prod,int quantity)
     {
         this.prod=prod;
         this.quantity=quantity;
-        this.size=size;
     }
 
     public Product getProd() {
@@ -36,35 +34,26 @@ public class ProductToOrder {
         this.quantity = quantity;
     }
 
-    public String getSize() {
-        return size;
-    }
 
-    public void setSize(String size) {
-        this.size = size;
-    }
 
     @Override
     public String toString() {
         return "ProductToOrder{" +
                 "prod=" + prod +
-                ", quantity=" + quantity +
-                ", size='" + size + '\'' +
+                ", quantity=" + quantity +'\'' +
         '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ProductToOrder that = (ProductToOrder) o;
-        return quantity == that.quantity &&
-                Objects.equals(prod, that.prod) &&
-                Objects.equals(size, that.size);
+
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        if (!super.equals(object)) return false;
+        ProductToOrder that = (ProductToOrder) object;
+        return quantity == that.quantity && prod.equals(that.prod);
     }
 
-    @Override
     public int hashCode() {
-        return Objects.hash(prod, quantity, size);
+        return Objects.hash(super.hashCode(), prod, quantity);
     }
 }

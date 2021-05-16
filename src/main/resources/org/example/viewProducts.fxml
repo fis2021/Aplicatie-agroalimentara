@@ -14,7 +14,6 @@
             <columns>
                 <TableColumn fx:id="name" prefWidth="125.5999755859375" text="Name" />
                 <TableColumn fx:id="price" minWidth="0.0" prefWidth="67.99993896484375" text="Price" />
-                <TableColumn fx:id="size" minWidth="0.0" prefWidth="60.0" text="Size" />
                 <TableColumn fx:id="quantity" minWidth="5.60003662109375" prefWidth="85.5999755859375" text="Quantity" />
                 <TableColumn fx:id="add" prefWidth="67.20001220703125" text="Add" />
             </columns>
