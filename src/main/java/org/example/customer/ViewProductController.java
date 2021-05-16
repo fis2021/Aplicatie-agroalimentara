@@ -37,8 +37,6 @@ public class ViewProductController {
     @FXML
     private TableColumn<Product, Double> price;
     @FXML
-    private TableColumn<Product, String> size;
-    @FXML
     private TableColumn<Product, String> quantity;
     @FXML
     private TextField filterField;
@@ -61,7 +59,6 @@ public class ViewProductController {
 
     private static int productscounter = 0;
     private static int quant = 0;
-    private static String sizeselector;
 
 
     public static void openViewProductsPanel(String storeName) throws IOException {
@@ -128,49 +125,15 @@ public class ViewProductController {
 
         quantity.setCellFactory(cellFactory);
 
+
+
         Callback<TableColumn<Product, String>, TableCell<Product, String>> cellFactory2 = (param) -> {
-            final TableCell<Product, String> cell2 = new TableCell<Product, String>() {
-
-                @Override
-                public void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-
-                    if (empty) {
-                        setGraphic(null);
-                        setText(null);
-                    } else {
-                        final ChoiceBox selectSize = new ChoiceBox();
-                        selectSize.getItems().add("S");
-                        selectSize.getItems().add("M");
-                        selectSize.getItems().add("L");
-                        selectSize.getItems().add("XL");
-
-
-                        selectSize.setOnAction(event -> {
-
-                            sizeselector = (String) selectSize.getValue();
-
-                        });
-
-                        setGraphic(selectSize);
-                        setText(null);
-
-                    }
-                }
-            };
-
-            return cell2;
-
-        };
-
-        size.setCellFactory(cellFactory2);
-
-        Callback<TableColumn<Product, String>, TableCell<Product, String>> cellFactory3 = (param) -> {
             final TableCell<Product, String> cell = new TableCell<Product, String>() {
 
                 @Override
                 public void updateItem(String item, boolean empty) {
                     super.updateItem(item, empty);
+
 
                     if (empty) {
                         setGraphic(null);
@@ -183,13 +146,10 @@ public class ViewProductController {
                                 JOptionPane.showMessageDialog(null, "No quantity selected !");
                                 return;
                             }
-                            if (!sizeselector.equals("S") && !sizeselector.equals("M") && !sizeselector.equals("L") && !sizeselector.equals("XL")) {
-                                JOptionPane.showMessageDialog(null, "No size selected !");
-                                return;
-                            }
+
 
                             Product p = tableview.getItems().get(getIndex());
-                            ProductToOrder newProd = new ProductToOrder(p, quant, sizeselector);
+                            ProductToOrder newProd = new ProductToOrder(p, quant);
                             productsOrd.add(newProd);
                             productscounter = productscounter + quant;
                             productsincart.setText(String.valueOf(productscounter));
@@ -208,7 +168,7 @@ public class ViewProductController {
 
         };
 
-        add.setCellFactory(cellFactory3);
+        add.setCellFactory(cellFactory2);
 
 
         FilteredList<Product> filteredData = new FilteredList<>(prodList, b -> true);
