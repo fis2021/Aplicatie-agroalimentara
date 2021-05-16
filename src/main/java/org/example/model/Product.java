@@ -1,25 +1,32 @@
 package org.example.model;
 
 
+import org.dizitart.no2.objects.Id;
+
 import java.util.Objects;
 
 public class Product {
-    private String name;
-    private double price;
 
-    public Product(){
+    // TODO: Remove public modifier.
+    @Id
+    public String name;
+    public double price;
 
+    public Product() {
+        this.name = "";
+        this.price = 0.0;
     }
-    public Product(String name,double price){
-        this.name=name;
-        this.price=price;
+
+    public Product(String name, double price) {
+        this.name = name;
+        this.price = price;
     }
 
     @Override
     public String toString() {
         return "Product{" +
                 "name='" + name + '\'' +
-        ", price=" + price +
+                ", price=" + price +
                 '}';
     }
 

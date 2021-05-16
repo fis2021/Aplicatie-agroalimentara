@@ -1,9 +1,6 @@
 package org.example.customer;
 
 
-
-import org.dizitart.no2.objects.ObjectRepository;
-import org.example.exceptions.UsernameAlreadyExistsException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -13,36 +10,36 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import org.example.model.Order;
+import org.dizitart.no2.objects.ObjectRepository;
+import org.example.database.Database;
+import org.example.exceptions.UsernameAlreadyExistsException;
 import org.example.model.Product;
 import org.example.model.ProductToOrder;
 import org.example.model.User;
-import org.example.services.StoreService;
 import org.example.services.UserService;
+
 import javax.swing.*;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
+
+import static org.example.database.Database.users;
 
 public class ViewProductController {
 
     @FXML
     private TableView<Product> tableview;
     @FXML
-    private TableColumn<Product,String> name;
+    private TableColumn<Product, String> name;
     @FXML
-    private TableColumn<Product,Double> price;
+    private TableColumn<Product, Double> price;
     @FXML
-    private TableColumn<Product,String> size;
+    private TableColumn<Product, String> size;
     @FXML
-    private TableColumn<Product,String> quantity;
+    private TableColumn<Product, String> quantity;
     @FXML
     private TextField filterField;
     @FXML
@@ -56,22 +53,21 @@ public class ViewProductController {
     @FXML
     private TextField productsincart;
 
-    private final ObservableList<Product> prodList= FXCollections.observableArrayList();
+    private final ObservableList<Product> prodList = FXCollections.observableArrayList();
     private static ObjectRepository<Product> products;
 
     ArrayList<ProductToOrder> productsOrd = new ArrayList<ProductToOrder>();
     ArrayList<Product> productstoorder = new ArrayList<Product>();
 
-    private static int productscounter=0;
-    private static int quant=0;
+    private static int productscounter = 0;
+    private static int quant = 0;
     private static String sizeselector;
 
 
+    public static void openViewProductsPanel(String storeName) throws IOException {
 
-    public static void openViewProductsPanel(Path pth) throws IOException {
-
-        products= StoreService.loadDataFromFile(pth);
-        Parent viewProductsWindow = FXMLLoader.load(ViewProductController.class.getResource("/viewproducts.fxml"));
+        products = Database.productsForStore(storeName);
+        Parent viewProductsWindow = FXMLLoader.load(ViewProductController.class.getResource("/org/example/viewProducts.fxml"));
         Scene viewProductsScene = new Scene(viewProductsWindow);
 
         Stage window = new Stage();
@@ -81,11 +77,11 @@ public class ViewProductController {
         window.show();
     }
 
-    public void initialize(){
+    public void initialize() {
         name.setCellValueFactory(new PropertyValueFactory<>("Name"));
         price.setCellValueFactory(new PropertyValueFactory<>("Price"));
 
-        for(Product prod:products.find()){
+        for (Product prod : products.find()) {
             prodList.add(prod);
         }
 
@@ -94,19 +90,17 @@ public class ViewProductController {
         productsincart.setText(String.valueOf(productscounter));
 
 
-        Callback<TableColumn<Product,String>, TableCell<Product,String>> cellFactory=(param) -> {
-            final TableCell<Product,String> cell = new TableCell<Product,String>(){
+        Callback<TableColumn<Product, String>, TableCell<Product, String>> cellFactory = (param) -> {
+            final TableCell<Product, String> cell = new TableCell<Product, String>() {
 
                 @Override
-                public void updateItem(String item,boolean empty){
-                    super.updateItem(item,empty);
+                public void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
 
-                    if(empty)
-                    {
+                    if (empty) {
                         setGraphic(null);
                         setText(null);
-                    }else
-                    {
+                    } else {
                         final ChoiceBox selectQuantity = new ChoiceBox();
 
                         selectQuantity.getItems().add("1");
@@ -115,9 +109,9 @@ public class ViewProductController {
                         selectQuantity.getItems().add("4");
                         selectQuantity.getItems().add("5");
 
-                        selectQuantity.setOnAction(event ->{
+                        selectQuantity.setOnAction(event -> {
 
-                            quant=Integer.parseInt((String)selectQuantity.getValue());
+                            quant = Integer.parseInt((String) selectQuantity.getValue());
 
                         });
 
@@ -134,19 +128,17 @@ public class ViewProductController {
 
         quantity.setCellFactory(cellFactory);
 
-        Callback<TableColumn<Product,String>,TableCell<Product,String>> cellFactory2=(param) -> {
-            final TableCell<Product,String> cell2 = new TableCell<Product,String>(){
+        Callback<TableColumn<Product, String>, TableCell<Product, String>> cellFactory2 = (param) -> {
+            final TableCell<Product, String> cell2 = new TableCell<Product, String>() {
 
                 @Override
-                public void updateItem(String item,boolean empty){
-                    super.updateItem(item,empty);
+                public void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
 
-                    if(empty)
-                    {
+                    if (empty) {
                         setGraphic(null);
                         setText(null);
-                    }else
-                    {
+                    } else {
                         final ChoiceBox selectSize = new ChoiceBox();
                         selectSize.getItems().add("S");
                         selectSize.getItems().add("M");
@@ -154,9 +146,9 @@ public class ViewProductController {
                         selectSize.getItems().add("XL");
 
 
-                        selectSize.setOnAction(event ->{
+                        selectSize.setOnAction(event -> {
 
-                            sizeselector=(String)selectSize.getValue();
+                            sizeselector = (String) selectSize.getValue();
 
                         });
 
@@ -173,39 +165,35 @@ public class ViewProductController {
 
         size.setCellFactory(cellFactory2);
 
-        Callback<TableColumn<Product,String>, TableCell<Product,String>> cellFactory3=(param) -> {
-            final TableCell<Product,String> cell = new TableCell<Product,String>(){
+        Callback<TableColumn<Product, String>, TableCell<Product, String>> cellFactory3 = (param) -> {
+            final TableCell<Product, String> cell = new TableCell<Product, String>() {
 
                 @Override
-                public void updateItem(String item,boolean empty){
-                    super.updateItem(item,empty);
+                public void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
 
-                    if(empty)
-                    {
+                    if (empty) {
                         setGraphic(null);
                         setText(null);
-                    }else
-                    {
+                    } else {
                         final Button add = new Button("Add");
 
-                        add.setOnAction(event ->{
-                            if(quant==0)
-                            {
+                        add.setOnAction(event -> {
+                            if (quant == 0) {
                                 JOptionPane.showMessageDialog(null, "No quantity selected !");
                                 return;
                             }
-                            if(!sizeselector.equals("S") && !sizeselector.equals("M") && !sizeselector.equals("L") && !sizeselector.equals("XL"))
-                            {
+                            if (!sizeselector.equals("S") && !sizeselector.equals("M") && !sizeselector.equals("L") && !sizeselector.equals("XL")) {
                                 JOptionPane.showMessageDialog(null, "No size selected !");
                                 return;
                             }
 
                             Product p = tableview.getItems().get(getIndex());
-                            ProductToOrder newProd = new ProductToOrder(p,quant,sizeselector);
+                            ProductToOrder newProd = new ProductToOrder(p, quant, sizeselector);
                             productsOrd.add(newProd);
-                            productscounter = productscounter+quant;
+                            productscounter = productscounter + quant;
                             productsincart.setText(String.valueOf(productscounter));
-                            quant=0;
+                            quant = 0;
                             tableview.refresh();
                         });
 
@@ -223,7 +211,6 @@ public class ViewProductController {
         add.setCellFactory(cellFactory3);
 
 
-
         FilteredList<Product> filteredData = new FilteredList<>(prodList, b -> true);
         filterField.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(product -> {
@@ -234,10 +221,7 @@ public class ViewProductController {
                 }
                 String lowerCaseFilter = newValue.toLowerCase();
 
-                if (product.getName().toLowerCase().indexOf(lowerCaseFilter) != -1 )
-                    return true;
-                else
-                    return false;
+                return product.getName().toLowerCase().contains(lowerCaseFilter);
             });
         });
         SortedList<Product> sortedData = new SortedList<>(filteredData);
@@ -247,15 +231,9 @@ public class ViewProductController {
         tableview.setItems(sortedData);
     }
 
-
-    private static ObjectRepository<User> users=UserService.getUsers();
-    private static ObjectRepository<Order> orders=UserService.getOrders();
-
-
-
     public void placeNewOrder() throws IOException, UsernameAlreadyExistsException {
 
-        if(productscounter==0) {
+        if (productscounter == 0) {
             JOptionPane.showMessageDialog(null, "No items added in cart !");
             return;
         }
@@ -266,52 +244,50 @@ public class ViewProductController {
             if (!Objects.equals(usernameInput.getText(), user.getUsername()))
                 i++;
         }
-        for (User user : users.find())
-        {
+        for (User user : users.find()) {
             if (!Objects.equals(shopnameInput.getText(), user.getUsername()))
                 j++;
         }
-        if(i==users.size() || j==users.size()){
+        if (i == users.size() || j == users.size()) {
             JOptionPane.showMessageDialog(null, "Failed security test");
             productsOrd.clear();
-            productscounter=0;
+            productscounter = 0;
             productsincart.setText(String.valueOf(productscounter));
-        }else {
+        } else {
             for (User user : users.find()) {
                 if (Objects.equals(usernameInput.getText(), user.getUsername()))
-                    if (Objects.equals(user.getPassword(), UserService.encodePassword(usernameInput.getText(), passwordInput.getText())))
-                    {
+                    if (Objects.equals(user.getPassword(), UserService.encodePassword(usernameInput.getText(), passwordInput.getText()))) {
                         try {
-                            UserService.addOrder(shopnameInput.getText(), usernameInput.getText(), (ObjectRepository<ProductToOrder>) productsOrd);
+                            UserService.addOrder(shopnameInput.getText(), usernameInput.getText(), productsOrd);
                             productsOrd.clear();
-                            productscounter=0;
+                            productscounter = 0;
                             productsincart.setText(String.valueOf(productscounter));
                             JOptionPane.showMessageDialog(null, "Order placed successfully !");
                         } catch (Exception e) {
+                            e.printStackTrace();
                             JOptionPane.showMessageDialog(null, e.getMessage());
                             productsOrd.clear();
-                            productscounter=0;
+                            productscounter = 0;
                             productsincart.setText(String.valueOf(productscounter));
-                        }finally
-                        {
+                        } finally {
                             productsOrd.clear();
-                            productscounter=0;
+                            productscounter = 0;
                             productsincart.setText(String.valueOf(productscounter));
                         }
                     } else {
                         JOptionPane.showMessageDialog(null, "Failed security test");
                         productsOrd.clear();
-                        productscounter=0;
+                        productscounter = 0;
                         productsincart.setText(String.valueOf(productscounter));
                     }
             }
             productsOrd.clear();
-            productscounter=0;
+            productscounter = 0;
             productsincart.setText(String.valueOf(productscounter));
 
         }
         productsOrd.clear();
-        productscounter=0;
+        productscounter = 0;
         productsincart.setText(String.valueOf(productscounter));
         //UserService.loadUsersFromFile();
 

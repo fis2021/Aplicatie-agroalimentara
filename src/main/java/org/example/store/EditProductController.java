@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.example.model.Product;
 import org.example.services.StoreService;
 import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
@@ -25,7 +26,7 @@ public class EditProductController {
     @FXML
     private PasswordField passwordInput;
     public static void EditProdPanel() throws IOException {
-        Parent editProdWindow = FXMLLoader.load(EditProductController.class.getResource("/edit.fxml"));
+        Parent editProdWindow = FXMLLoader.load(EditProductController.class.getResource("/org/example/edit.fxml"));
         Scene editProdScene = new Scene(editProdWindow);
 
         Stage window = new Stage();
@@ -34,9 +35,10 @@ public class EditProductController {
         window.setTitle("Edit Product Panel");
         window.show();
     }
-    public void editProduct()throws IOException, ProductAlreadyExistsException {
+    public void editProduct() {
         try {
-            StoreService.editData(curentNameInput.getText(), newNameInput.getText(), newPriceInput.getText(), usernameInput.getText(), passwordInput.getText());
+            final Product product = new Product(newNameInput.getText(), Double.parseDouble(newPriceInput.getText()));
+            StoreService.editData(curentNameInput.getText(), product, usernameInput.getText(), passwordInput.getText());
             curentNameInput.clear();
             newNameInput.clear();
             newPriceInput.clear();
