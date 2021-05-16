@@ -1,5 +1,6 @@
 package org.example.admin;
 
+import org.example.customer.CustomerController;
 import org.example.exceptions.UsernameAlreadyExistsException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,7 +26,7 @@ public class AdminController {
 
     public static void openAdminPanel() throws IOException {
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(new URL("file:///C:/Users/Andreea/IdeaProjects/Aplicatie-agroalimentara-final11/src/main/resources/org/example/admin.fxml"));
+        loader.setLocation(CustomerController.class.getResource("/org/example/admin.fxml"));
         Parent adminWindow = loader.load();
         Scene adminScene = new Scene(adminWindow);
 

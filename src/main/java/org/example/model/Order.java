@@ -1,49 +1,58 @@
 package org.example.model;
 
-import org.dizitart.no2.objects.ObjectRepository;
+import org.dizitart.no2.objects.Id;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Order {
 
-    private String shopname;
-    private String customername;
-    private ObjectRepository<ProductToOrder> productsOrd ;
+    @Id
+    private long id;
+    private String shopName;
+    private String customerName;
+    private List<ProductToOrder> productsOrdered;
 
-    public  Order()
-    {
+    public Order() {
 
     }
 
-    public Order(String shopname,String customername,ObjectRepository<ProductToOrder> productsOrd)
-    {
-        this.shopname=shopname;
-        this.customername=customername;
-        this.productsOrd=productsOrd;
+    public Order(String shopname, String customername, List<ProductToOrder> productsOrdered) {
+        this.shopName = shopname;
+        this.customerName = customername;
+        this.productsOrdered = productsOrdered;
     }
 
-    public String getShopname() {
-        return shopname;
+    public long getId() {
+        return id;
     }
 
-    public void setShopname(String shopname) {
-        this.shopname = shopname;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public String getCustomername() {
-        return customername;
+    public String getShopName() {
+        return shopName;
     }
 
-    public void setCustomername(String customername) {
-        this.customername = customername;
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
     }
 
-    public ObjectRepository<ProductToOrder> getProductsOrd() {
-        return productsOrd;
+    public String getCustomerName() {
+        return customerName;
     }
 
-    public void setProductsOrd(ObjectRepository<ProductToOrder> productsOrd) {
-        this.productsOrd = productsOrd;
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public List<ProductToOrder> getProductsOrdered() {
+        return productsOrdered;
+    }
+
+    public void setProductsOrdered(List<ProductToOrder> productsOrdered) {
+        this.productsOrdered = productsOrdered;
     }
 
     @Override
@@ -51,22 +60,20 @@ public class Order {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return Objects.equals(shopname, order.shopname) &&
-                Objects.equals(customername, order.customername) &&
-                Objects.equals(productsOrd, order.productsOrd);
+        return id == order.id && shopName.equals(order.shopName) && customerName.equals(order.customerName) && Objects.equals(productsOrdered, order.productsOrdered);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(shopname, customername, productsOrd);
+        return Objects.hash(shopName, customerName, productsOrdered);
     }
 
     @Override
     public String toString() {
         return "Order{" +
-                "shopname='" + shopname + '\'' +
-                ", customername='" + customername + '\'' +
-                ", productsOrd=" + productsOrd +
+                "shopname='" + shopName + '\'' +
+                ", customername='" + customerName + '\'' +
+                ", productsOrd=" + productsOrdered +
                 '}';
     }
 }

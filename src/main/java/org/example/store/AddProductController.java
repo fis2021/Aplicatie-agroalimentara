@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.example.model.Product;
 import org.example.services.StoreService;
 
 import javax.swing.*;
@@ -26,7 +27,7 @@ public class AddProductController {
 
     public static void openAddProdPanel() throws IOException {
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(new URL("file:///C:/Users/Andreea/IdeaProjects/Aplicatie-agroalimentara-final11/src/main/resources/org/example/addProduct.fxml"));
+        loader.setLocation(AddProductController.class.getResource("/org/example/addProduct.fxml"));
         Parent addProdWindow = loader.load();
         Scene addProdScene = new Scene(addProdWindow);
 
@@ -38,7 +39,9 @@ public class AddProductController {
     }
     public void addNewProd() throws ProductAlreadyExistsException, IOException {
         try {
-            StoreService.addData(nameInput.getText(), priceInput.getText(), usernameInput.getText(), passwordInput.getText());
+            // TODO: Make sure priceInput has valid data before parsing.
+            final Product product = new Product(nameInput.getText(), Double.parseDouble(priceInput.getText()));
+            StoreService.addData(usernameInput.getText(), passwordInput.getText(), product);
             nameInput.clear();
             passwordInput.clear();
             priceInput.clear();

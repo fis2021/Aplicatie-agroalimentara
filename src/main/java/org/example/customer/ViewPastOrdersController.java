@@ -12,14 +12,15 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import org.dizitart.no2.objects.ObjectRepository;
+import org.dizitart.no2.objects.filters.ObjectFilters;
+import org.example.database.Database;
 import org.example.model.OrderStatus;
-import org.example.services.FileSystemService;
-import org.example.services.StoreService;
 import org.example.store.EditProductController;
 import java.io.IOException;
-import java.util.List;
+
 public class ViewPastOrdersController {
+
+    private static String userName;
 
     @FXML
     private TableView<OrderStatus> tableview;
@@ -28,23 +29,22 @@ public class ViewPastOrdersController {
     @FXML
     private TextField filterField;
     private final ObservableList<OrderStatus> statList= FXCollections.observableArrayList();
-    private static ObjectRepository<OrderStatus> stats;
-    public static void viewPastOrdersPanel() throws IOException {
 
-        stats = StoreService.loadStatusFromFile(FileSystemService.getPathToFile("config", "status.db"));
-        Parent viewPastOrdersWindow = FXMLLoader.load(EditProductController.class.getResource("/userOrder.fxml"));
+    public static void viewPastOrdersPanel(String username) throws IOException {
+        Parent viewPastOrdersWindow = FXMLLoader.load(EditProductController.class.getResource("/org/example/userOrder.fxml"));
         Scene viewPastOrdersScene = new Scene(viewPastOrdersWindow);
         Stage window = new Stage();
         window.setScene(viewPastOrdersScene);
         window.setTitle("Orders History");
         window.show();
+        userName = username;
     }
 
     public void initialize()
     {
-        orders.setCellValueFactory(new PropertyValueFactory<OrderStatus,String>("Orders"));
-        for(OrderStatus or:stats.find()){
-            statList.add(or);
+        orders.setCellValueFactory(new PropertyValueFactory<>("order"));
+        for(OrderStatus status : Database.statuses.find(ObjectFilters.eq("customerName", userName))){
+            statList.add(status);
         }
 
         FilteredList<OrderStatus> filteredData = new FilteredList<>(statList, b -> true);
@@ -54,10 +54,7 @@ public class ViewPastOrdersController {
                     return true;
                 }
                 String lowerCaseFilter = newValue.toLowerCase();
-                if (info.getO().getShopname().toLowerCase().indexOf(lowerCaseFilter) != -1 )
-                    return true;
-                else
-                    return false;
+                return info.getOrder().getShopName().toLowerCase().contains(lowerCaseFilter);
             });
         });
         SortedList<OrderStatus> sortedData = new SortedList<>(filteredData);

@@ -4,11 +4,13 @@ import java.util.Objects;
 
 public class ProductToOrder {
 
-    private Product prod;
-    private int quantity;
-    private String size;
+    // TODO: Remove public modifier.
+    public Product prod;
+    public int quantity;
+    public String size;
 
     public ProductToOrder() {
+
     }
 
     public ProductToOrder(Product prod,int quantity,String size)

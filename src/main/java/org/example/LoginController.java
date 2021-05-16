@@ -8,7 +8,14 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
 import javafx.stage.Stage;
+import org.example.admin.AdminController;
+import org.example.customer.CustomerController;
+import org.example.exceptions.UnauthorizedException;
+import org.example.model.UserType;
 import org.example.services.UserService;
+import org.example.store.StoreController;
+
+import javax.swing.*;
 
 public class LoginController {
     @FXML
@@ -35,6 +42,15 @@ public class LoginController {
         window.show();
     }
     public void login() throws Exception {
-        UserService.checkUsers(usernameInput.getText(),passwordInput.getText(),(String)roleInput.getValue());
+        final UserType userType = UserType.valueOf(((String)roleInput.getValue()).toUpperCase());
+        final String userName = usernameInput.getText();
+
+        UserService.checkUser(userName,passwordInput.getText(),userType);
+
+        switch (userType) {
+            case CUSTOMER: CustomerController.openCustomerPanel(userName); break;
+            case STORE: StoreController.openStorePanel(userName); break;
+            case ADMIN: AdminController.openAdminPanel(); break;
+        }
     }
 }

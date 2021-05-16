@@ -23,7 +23,7 @@ public class DeleteProductController {
     private PasswordField passwordInput;
 
     public static void deleteProdPanel() throws IOException {
-        Parent deleteProdWindow = FXMLLoader.load(AddProductController.class.getResource("/delete.fxml"));
+        Parent deleteProdWindow = FXMLLoader.load(AddProductController.class.getResource("/org/example/delete.fxml"));
         Scene deleteProdScene = new Scene(deleteProdWindow);
 
         Stage window = new Stage();
@@ -32,7 +32,7 @@ public class DeleteProductController {
         window.setTitle("Delete Product Panel");
         window.show();
     }
-    public void deleteProd()throws IOException, ProductDoesNotExist , ProductAlreadyExistsException {
+    public void deleteProd()throws IOException , ProductAlreadyExistsException {
         try {
             StoreService.deleteData(productInput.getText(),usernameInput.getText(),passwordInput.getText());
             productInput.clear();

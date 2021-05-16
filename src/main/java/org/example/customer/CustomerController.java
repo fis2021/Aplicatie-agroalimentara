@@ -12,36 +12,32 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import org.dizitart.no2.objects.ObjectRepository;
 import org.example.model.User;
 import org.example.services.FileSystemService;
-import org.example.services.UserService;
-import org.example.store.EditProductController;
 
-import java.net.URL;
-import java.util.List;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
 
+import static org.example.database.Database.users;
+
 public class CustomerController {
 
-    public final ObservableList<User> stores = FXCollections.observableArrayList();
-
-    private static ObjectRepository<User> users = UserService.getUsers();
+    private final ObservableList<User> stores = FXCollections.observableArrayList();
+    private static String userName;
 
     @FXML
     private TableView<User> tableview;
     @FXML
-    private TableColumn<User,String> username;
+    private TableColumn<User, String> username;
     @FXML
     private TableColumn viewproducts;
     @FXML
     private TextField filterField;
 
-    public static void openCustomerPanel() throws IOException {
+    public static void openCustomerPanel(String username) throws IOException {
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(new URL("file:///C:/Users/Andreea/IdeaProjects/Aplicatie-agroalimentara-final11/src/main/resources/org/example/customer.fxml"));
+        loader.setLocation(CustomerController.class.getResource("/org/example/customer.fxml"));
         Parent customerWindow = loader.load();
         Scene customerScene = new Scene(customerWindow);
 
@@ -50,39 +46,35 @@ public class CustomerController {
         window.setScene(customerScene);
         window.setTitle("Customer Panel");
         window.show();
+        userName = username;
     }
 
     public void viewOrderHistory() throws IOException {
-        ViewPastOrdersController.viewPastOrdersPanel();
+        ViewPastOrdersController.viewPastOrdersPanel(userName);
     }
 
-    public void initialize(){
+    public void initialize() {
         username.setCellValueFactory(new PropertyValueFactory<>("username"));
         viewproducts.setSortable(false);
 
-        Callback<TableColumn<User,String>,TableCell<User,String>> cellFactory = (param) -> {
+        Callback<TableColumn<User, String>, TableCell<User, String>> cellFactory = (param) -> {
 
-            final TableCell<User,String> cell = new TableCell<User,String>(){
+            final TableCell<User, String> cell = new TableCell<User, String>() {
 
                 @Override
-                public void updateItem(String item,boolean empty){
-                    super.updateItem(item,empty);
+                public void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
 
-                    if(empty)
-                    {
+                    if (empty) {
                         setGraphic(null);
                         setText(null);
-                    }
-                    else
-                    {
+                    } else {
                         final Button viewButton = new Button("View");
                         viewButton.setOnAction(event -> {
 
                             User u = getTableView().getItems().get(getIndex());
-                            Path STORE_PATH = FileSystemService.getPathToFile("config", u.getUsername() + ".db");
-
                             try {
-                                ViewProductController.openViewProductsPanel(STORE_PATH);
+                                ViewProductController.openViewProductsPanel(u.getUsername());
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -95,7 +87,9 @@ public class CustomerController {
                         setText(null);
                     }
 
-                };
+                }
+
+                ;
 
             };
             return cell;
@@ -103,9 +97,8 @@ public class CustomerController {
 
         viewproducts.setCellFactory(cellFactory);
 
-        for(User user : users.find())
-        {
-            if(Objects.equals(user.getRole(),"Store"))
+        for (User user : users.find()) {
+            if (Objects.equals(user.getRole(), "Store"))
                 stores.add(user);
         }
 
@@ -119,7 +112,7 @@ public class CustomerController {
                 }
                 String lowerCaseFilter = newValue.toLowerCase();
 
-                if (store.getUsername().toLowerCase().indexOf(lowerCaseFilter) != -1 )
+                if (store.getUsername().toLowerCase().indexOf(lowerCaseFilter) != -1)
                     return true;
                 else
                     return false;

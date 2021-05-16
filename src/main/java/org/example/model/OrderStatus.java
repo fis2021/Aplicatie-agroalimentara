@@ -4,7 +4,7 @@ package org.example.model;
 import java.util.Objects;
 
 public class OrderStatus {
-    private Order o;
+    private Order order;
     private String status;
 
     public OrderStatus() {
@@ -12,20 +12,20 @@ public class OrderStatus {
     }
 
     public OrderStatus(Order o, String status) {
-        this.o = o;
+        this.order = o;
         this.status = status;
     }
 
-    public Order getO() {
-        return o;
+    public Order getOrder() {
+        return order;
     }
 
     public String getStatus() {
         return status;
     }
 
-    public void setO(Order o) {
-        this.o = o;
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     public void setStatus(String status) {
@@ -37,28 +37,20 @@ public class OrderStatus {
         if (this == o1) return true;
         if (o1 == null || getClass() != o1.getClass()) return false;
         OrderStatus that = (OrderStatus) o1;
-        return Objects.equals(o, that.o) &&
+        return Objects.equals(order, that.order) &&
                 Objects.equals(status, that.status);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(o, status);
+        return Objects.hash(order, status);
     }
 
     @Override
     public String toString() {
         return "OrderStatus{" +
-                "o=" + o +
+                "order=" + order +
                 ", status='" + status + '\'' +
                 '}';
     }
-
-
-
-
-
-
-
-
 }

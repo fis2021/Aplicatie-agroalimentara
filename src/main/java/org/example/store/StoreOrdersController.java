@@ -12,13 +12,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import org.dizitart.no2.objects.ObjectRepository;
+import org.example.database.Database;
+import org.example.model.Order;
 import org.example.model.OrderStatus;
-import org.example.services.FileSystemService;
 import org.example.services.StoreService;
 import javafx.scene.control.TableView;
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 
 public class StoreOrdersController {
@@ -31,12 +30,11 @@ public class StoreOrdersController {
     @FXML
     private TextField  filterField;
     private final ObservableList<OrderStatus> statList= FXCollections.observableArrayList();
-    private static ObjectRepository<OrderStatus> stats;
-    private static String accepReject;
 
     public void initialize(){
-        order.setCellValueFactory(new PropertyValueFactory<OrderStatus,String>("Order"));
-        for(OrderStatus or:stats.find()){
+        order.setCellValueFactory(new PropertyValueFactory<>("Order"));
+        // TODO: Filter by store.
+        for(OrderStatus or: Database.statuses.find()){
             if(Objects.equals(or.getStatus(),"Pending")) {
                 statList.add(or);
             }
@@ -49,10 +47,7 @@ public class StoreOrdersController {
                     return true;
                 }
                 String lowerCaseFilter = newValue.toLowerCase();
-                if (info.getO().getShopname().toLowerCase().indexOf(lowerCaseFilter) != -1 )
-                    return true;
-                else
-                    return false;
+                return info.getOrder().getShopName().toLowerCase().contains(lowerCaseFilter);
             });
         });
         SortedList<OrderStatus> sortedData = new SortedList<>(filteredData);
@@ -77,24 +72,10 @@ public class StoreOrdersController {
                         final ChoiceBox selectStatus = new ChoiceBox();
                         selectStatus.getItems().add("Accept");
                         selectStatus.getItems().add("Reject");
-
-
-
                         selectStatus.setOnAction(event ->{
-
-                            accepReject=(String)selectStatus.getValue();
-                            OrderStatus os=ordSt.getItems().get(getIndex());
-                            os.setStatus(accepReject);
-                            OrderStatus temp=new OrderStatus(os.getO(),accepReject);
-                            try {
-                                StoreService.deleteStatus(os.getO().getShopname(),os.getO().getCustomername(),os.getO().getProductsOrd());
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            try {
-                                StoreService.addOrdStatus(temp);
-                            } catch (IOException e) {
-                            }
+                            final String acceptReject=(String)selectStatus.getValue();
+                            final Order order = ordSt.getItems().get(getIndex()).getOrder();
+                            StoreService.updateOrderStatus(order, acceptReject);
                         });
 
                         setGraphic(selectStatus);
@@ -110,8 +91,7 @@ public class StoreOrdersController {
         accRej.setCellFactory(cellFactory2);
     }
     public static void viewOrdersPanel() throws IOException {
-        stats = StoreService.loadStatusFromFile(FileSystemService.getPathToFile("config", "status.db"));
-        Parent viewOrdersWindow = FXMLLoader.load(EditProductController.class.getResource("/storeOrder.fxml"));
+        Parent viewOrdersWindow = FXMLLoader.load(EditProductController.class.getResource("/org/example/storeOrder.fxml"));
         Scene viewOrdersScene = new Scene(viewOrdersWindow);
 
         Stage window = new Stage();

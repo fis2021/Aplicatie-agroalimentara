@@ -15,6 +15,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import org.example.database.Database;
 import org.example.model.Product;
 import org.example.services.StoreService;
 import java.io.IOException;
@@ -31,10 +32,10 @@ public class StoreController {
     private TableColumn<Product,Double> price;
     @FXML
     private TextField filterField;
-    public static void openStorePanel(Path pth) throws IOException {
+    public static void openStorePanel(String storeName) throws IOException {
         //load data from file with store name
-        products=StoreService.loadDataFromFile(pth);
-        Parent storeWindow = FXMLLoader.load(AdminController.class.getResource("/store.fxml"));
+        products = Database.productsForStore(storeName);
+        Parent storeWindow = FXMLLoader.load(StoreController.class.getResource("/org/example/store.fxml"));
         Scene storeScene = new Scene(storeWindow);
         Stage window = new Stage();
         window.setScene(storeScene);
@@ -53,16 +54,11 @@ public class StoreController {
         FilteredList<Product> filteredData = new FilteredList<>(prodList, b -> true);
         filterField.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(product -> {
-
-
                 if (newValue == null || newValue.isEmpty()) {
                     return true;
                 }
                 String lowerCaseFilter = newValue.toLowerCase();
-                if (product.getName().toLowerCase().indexOf(lowerCaseFilter) != -1 )
-                    return true;
-                else
-                    return false;
+                return product.getName().toLowerCase().contains(lowerCaseFilter);
             });
         });
         SortedList<Product> sortedData = new SortedList<>(filteredData);
